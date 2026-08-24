@@ -1,0 +1,59 @@
+<div style="max-width: 600px; margin: 40px auto; padding: 25px; border: 1px solid #ddd; border-radius: 8px; background: white; font-family: sans-serif; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>➕ Ingresar Nuevo Recurso</h2>
+    <%= link_to "← Volver", recursos_path, style: "color: #6c757d; text-decoration: none; font-weight: bold;" %>
+  </div>
+
+  <%= form_with model: @recurso, local: true do |f| %>
+    <% if @recurso.errors.any? %>
+      <div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 4px; margin-bottom: 20px;">
+        <h4 style="margin: 0 0 5px 0;">Ocurrieron los siguientes errores:</h4>
+        <ul style="margin: 0; padding-left: 20px;">
+          <% @recurso.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div style="margin-bottom: 15px;">
+      <%= f.label :codigo, "Código Identificador:", style: "display: block; font-weight: bold; margin-bottom: 5px;" %>
+      <%= f.text_field :codigo, placeholder: "Ej. HE-005, SE-002", style: "width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;", required: true %>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <%= f.label :nombre, "Nombre del Recurso / Herramienta:", style: "display: block; font-weight: bold; margin-bottom: 5px;" %>
+      <%= f.text_field :nombre, placeholder: "Ej. Amoladora Angular, Set de Dados", style: "width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;", required: true %>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <%= f.label :tipo, "Categoría / Tipo:", style: "display: block; font-weight: bold; margin-bottom: 5px;" %>
+      <%= f.select :tipo, Recurso::TIPOS.map { |k, v| ["#{k} - #{v}", k] }, { prompt: "Seleccione una categoría" }, { style: "width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;", required: true } %>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <%= f.label :cantidad, "Cantidad Inicial:", style: "display: block; font-weight: bold; margin-bottom: 5px;" %>
+      <%= f.number_field :cantidad, min: 1, value: 1, style: "width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;", required: true %>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <%= f.label :ubicacion, "Ubicación en Taller:", style: "display: block; font-weight: bold; margin-bottom: 5px;" %>
+      <%= f.text_field :ubicacion, placeholder: "Ej. Estante A1, Caja de Herramientas 2", style: "width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" %>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <%= f.label :fecha_vencimiento, "Fecha de Vencimiento / Revisión (Opcional):", style: "display: block; font-weight: bold; margin-bottom: 5px;" %>
+      <%= f.date_field :fecha_vencimiento, style: "width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" %>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <%= f.label :observaciones, "Observaciones / Detalles:", style: "display: block; font-weight: bold; margin-bottom: 5px;" %>
+      <%= f.text_area :observaciones, rows: 3, placeholder: "Estado, accesorios incluidos, especificaciones...", style: "width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" %>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+      <%= f.submit "Guardar Recurso", style: "background: #198754; color: white; border: none; padding: 10px 18px; border-radius: 4px; font-weight: bold; cursor: pointer;" %>
+      <%= link_to "Cancelar", recursos_path, style: "background: #6c757d; color: white; padding: 10px 18px; text-decoration: none; border-radius: 4px; font-weight: bold;" %>
+    </div>
+  <% end %>
+</div>

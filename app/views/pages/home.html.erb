@@ -1,0 +1,55 @@
+<div style="max-width: 900px; margin: 30px auto; font-family: sans-serif;">
+  <h1>Bienvenido al Portal Serviteca</h1>
+  <p style="color: #555; font-size: 1.1rem;">
+    Hola <strong><%= current_usuario.email %></strong>. Estás conectado como <em><%= current_usuario.role %></em>.
+  </p>
+
+  <hr style="margin: 25px 0; border: none; border-top: 1px solid #ddd;">
+
+  <h2>¿Qué deseas hacer hoy?</h2>
+
+  <div style="display: flex; gap: 20px; margin-top: 20px;">
+    <!-- Tarjeta de Inventario -->
+    <div style="border: 1px solid #ccc; padding: 20px; border-radius: 8px; flex: 1;">
+    
+      <h3>Inventario de Recursos</h3>
+      <p>Consulta la disponibilidad de herramientas, equipos y EPP en el taller.</p>
+      <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+      <!-- Herramientas -->
+      <div style="flex: 1; background: #e3f2fd; border-left: 5px solid #0d6efd; padding: 15px; border-radius: 6px;">
+        <span style="font-size: 13px; color: #555; text-transform: uppercase; font-weight: bold;">Herramientas</span>
+        <h2 style="margin: 5px 0 0 0; color: #0d6efd;"><%= @total_herramientas %></h2>
+      </div>
+
+      <!-- Insumos -->
+      <div style="flex: 1; background: #e8f5e9; border-left: 5px solid #198754; padding: 15px; border-radius: 6px;">
+        <span style="font-size: 13px; color: #555; text-transform: uppercase; font-weight: bold;">Insumos</span>
+        <h2 style="margin: 5px 0 0 0; color: #198754;"><%= @total_insumos %></h2>
+      </div>
+
+      <!-- EPP -->
+      <div style="flex: 1; background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 6px;">
+        <span style="font-size: 13px; color: #555; text-transform: uppercase; font-weight: bold;">Equipos EPP</span>
+        <h2 style="margin: 5px 0 0 0; color: #856404;"><%= @total_epp %></h2>
+      </div>
+    </div>
+      <%= link_to "Ver Recursos", recursos_path, style: "background: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; display: inline-block;" %>
+    </div>
+
+    <!-- Tarjeta de Préstamos -->
+    <div style="border: 1px solid #ccc; padding: 20px; border-radius: 8px; flex: 1;">
+      <h3>Gestión de Préstamos</h3>
+      <p>
+        <% if current_usuario.estudiante? %>
+          Revisa el estado de tus solicitudes activas e historial.
+        <% else %>
+          Administra las solicitudes y devoluciones de los alumnos.
+        <% end %>
+      </p>
+      <p style="margin-top: 10px; font-weight: bold; color: #333;">
+        📋 Préstamos Activos: <%= @prestamos_activos %>
+      </p>
+      <%= link_to "Ver Préstamos", prestamos_path, style: "background: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; display: inline-block;" %>
+    </div>
+  </div>
+</div>

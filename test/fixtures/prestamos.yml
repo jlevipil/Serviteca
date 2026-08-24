@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  usuario: one
+  recurso: one
+  fecha_prestamo: 2026-08-15 18:06:45
+
+two:
+  usuario: two
+  recurso: two
+  fecha_prestamo: 2026-08-15 18:06:45

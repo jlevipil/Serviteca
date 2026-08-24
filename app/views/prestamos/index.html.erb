@@ -1,0 +1,90 @@
+<div style="max-width: 1100px; margin: 30px auto; font-family: sans-serif;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>
+      <% if current_usuario.estudiante? %>
+        Mis Solicitudes de Préstamo
+      <% else %>
+        Gestión General de Préstamos
+      <% end %>
+    </h2>
+  </div>
+
+  <table style="width: 100%; border-collapse: collapse; margin-top: 10px; text-align: left;">
+    <thead>
+      <tr style="background-color: #f2f2f2; border-bottom: 2px solid #ddd;">
+        <th style="padding: 12px;"># ID</th>
+        <% unless current_usuario.estudiante? %>
+          <th style="padding: 12px;">Solicitante</th>
+        <% end %>
+        <th style="padding: 12px;">Recurso</th>
+        <th style="padding: 12px;">Fecha Solicitud</th>
+        <th style="padding: 12px;">Estado</th>
+        <th style="padding: 10px;">Autorizado por</th>
+        <% unless current_usuario.estudiante? %>
+          <th style="padding: 12px;">Acciones</th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% if @prestamos.any? %>
+        <% @prestamos.each do |prestamo| %>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px;"><strong>#<%= prestamo.id %></strong></td>
+            
+            <% unless current_usuario.estudiante? %>
+              <td style="padding: 12px;">
+                <%= prestamo.usuario&.name || prestamo.usuario&.email %>
+              </td>
+            <% end %>
+
+            <td style="padding: 12px;"><%= prestamo.recurso&.nombre %></td>
+            <td style="padding: 12px;"><%= prestamo.created_at.strftime("%d/%m/%Y %H:%M") %></td>
+            
+            <%# Estado del Préstamo %>
+            <td style="padding: 12px;">
+              <% case prestamo.estado %>
+              <% when "pendiente" %>
+                <span style="background: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 13px;">Pendiente</span>
+              <% when "aprobado" %>
+                <span style="background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 13px;">Aprobado</span>
+              <% when "rechazado" %>
+                <span style="background: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 13px;">Rechazado</span>
+              <% else %>
+                <span style="background: #e2e3e5; color: #383d41; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 13px;"><%= prestamo.estado %></span>
+              <% end %>
+            </td>
+            
+            <td style="padding: 10px;">
+              <%= prestamo.autorizador&.email || "N/A" %>
+            </td>
+
+            <%# Acciones para el Encargado/Admin %>
+            <% unless current_usuario.estudiante? %>
+              <td style="padding: 10px;">
+                <% if prestamo.activo? %>
+                  <% if current_usuario.encargado? || current_usuario.admin? %>
+                    <%= button_to "Devolver", finalizar_prestamo_path(prestamo), method: :patch, data: { confirm: "¿Confirmar devolución del recurso?" }, style: "background: #17a2b8; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;" %>
+                  <% else %>
+                    <span style="color: #007bff; font-weight: bold;">En uso</span>
+                  <% end %>
+                <% elsif prestamo.terminado? %>
+                  <span style="color: #6c757d;">Devuelto</span>
+                <% end %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 20px; color: #777;">
+            No hay préstamos registrados.
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div style="margin-top: 20px;">
+    <%= link_to "← Volver al Inicio", root_path, style: "color: #555; text-decoration: none;" %>
+  </div>
+</div>

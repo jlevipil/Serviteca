@@ -1,0 +1,54 @@
+<div style="max-width: 1100px; margin: 30px auto; font-family: sans-serif;">
+  <h2>Panel de Administración e Historial General</h2>
+
+  <!-- Tarjetas de Métricas -->
+  <div style="display: flex; gap: 20px; align-items: center; justify-content: space-between; margin-bottom: 25px;">
+  <!-- Préstamos Activos -->
+  <div style="flex: 1; background: #e8f5e9; border-left: 5px solid #28a745; padding: 15px; border-radius: 6px;">
+    <span style="font-size: 13px; color: #555; text-transform: uppercase; font-weight: bold;">Préstamos Activos</span>
+    <h2 style="margin: 5px 0 0 0; color: #28a745;"><%= @prestamos_activos_count %></h2>
+  </div>
+
+  <!-- Botones de Acción -->
+  <div style="display: flex; gap: 10px;">
+    <%= link_to "+ Ingresar Recurso", new_recurso_path, style: "background: #198754; color: white; padding: 12px 18px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;" %>
+    
+    <%= link_to "👥 Administrar Usuarios", usuarios_path, style: "background: #0d6efd; color: white; padding: 12px 18px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;" %>
+  </div>
+</div>
+
+  <!-- Historial de Todos los Préstamos -->
+  <h3>Historial Completo de Préstamos</h3>
+  <table style="width: 100%; border-collapse: collapse; margin-top: 10px; text-align: left;">
+    <thead>
+      <tr style="background-color: #f2f2f2; border-bottom: 2px solid #ddd;">
+        <th style="padding: 10px;">ID</th>
+        <th style="padding: 10px;">Usuario</th>
+        <th style="padding: 10px;">Recurso</th>
+        <th style="padding: 10px;">Fecha Inicio</th>
+        <th style="padding: 10px;">Fecha Término</th>
+        <th style="padding: 10px;">Estado</th>
+        <th style="padding: 10px;">Autorizado por</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @prestamos.each do |p| %>
+        <tr style="border-bottom: 1px solid #ddd;">
+          <td style="padding: 10px;">#<%= p.id %></td>
+          <td style="padding: 10px;"><%= p.usuario&.email %></td>
+          <td style="padding: 10px;"><%= p.recurso&.nombre %></td>
+          <td style="padding: 10px;"><%= p.fecha_inicio&.strftime("%d/%m/%Y %H:%M") || "-" %></td>
+          <td style="padding: 10px;"><%= p.fecha_termino&.strftime("%d/%m/%Y %H:%M") || "En curso" %></td>
+          <td style="padding: 10px;">
+            <span style="padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; background: <%= p.activo? ? '#d4edda' : '#e2e3e5' %>; color: <%= p.activo? ? '#155724' : '#383d41' %>;">
+              <%= p.estado.capitalize %>
+            </span>
+          </td>
+          <td style="padding: 10px;">
+            <%= p.autorizador ? "#{p.autorizador.email} (#{p.autorizador.role})" : "-" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

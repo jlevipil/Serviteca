@@ -1,0 +1,120 @@
+<div style="max-width: 1100px; margin: 30px auto; font-family: sans-serif;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>Inventario de Recursos</h2>
+    <% if current_usuario.encargado? || current_usuario.admin? %>
+      <%= link_to "+ Nuevo Recurso", new_recurso_path, style: "background: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; font-weight: bold;" %>
+    <% end %>
+  </div>
+
+  <!-- Formulario de Filtros y Búsqueda -->
+  <%= form_with url: recursos_path, method: :get, local: true, style: "background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-end;" do |f| %>
+    <div style="flex: 2;">
+      <%= f.label :query, "Buscar por nombre:", style: "display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px;" %>
+      <%= f.text_field :query, value: params[:query], placeholder: "Ej. Amoladora, Taladro...", style: "width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" %>
+    </div>
+
+    <div style="flex: 1;">
+  <%= f.label :tipo, "Filtrar por tipo:", style: "display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px;" %>
+  <%= f.select :tipo, 
+               options_for_select(Recurso::TIPOS.map { |code, name| ["#{code} - #{name}", code] }, params[:tipo]), 
+               { include_blank: "Todos los tipos" }, 
+               { style: "width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" } %>
+</div>
+
+    <div style="display: flex; gap: 8px;">
+      <%= f.submit "Buscar", style: "background: #007bff; color: white; border: none; padding: 9px 18px; border-radius: 4px; cursor: pointer; font-weight: bold;" %>
+      <% if params[:query].present? || params[:tipo].present? %>
+        <%= link_to "Limpiar", recursos_path, style: "background: #6c757d; color: white; text-decoration: none; padding: 9px 15px; border-radius: 4px; font-size: 14px;" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Tabla de Resultados -->
+  <table style="width: 100%; border-collapse: collapse; margin-top: 10px; text-align: left;">
+    <thead>
+      <tr style="background-color: #f2f2f2; border-bottom: 2px solid #ddd;">
+        <th style="padding: 12px;">Código</th>
+        <th style="padding: 12px;">Nombre</th>
+        <th style="padding: 12px;">Tipo</th>
+        <th style="padding: 12px;">Cantidad</th>
+        <th style="padding: 12px;">Ubicación</th>
+        <th style="padding: 12px;">Observaciones</th>
+        <th style="padding: 12px;">Vencimiento</th>
+        <th style="padding: 12px;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if @recursos.any? %>
+        <% @recursos.each do |recurso| %>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px;"><strong><%= recurso.codigo %></strong></td>
+            <td style="padding: 12px;"><%= recurso.nombre %></td>
+            
+            <!-- Muestra la abreviatura de 2 letras y la descripción al pasar el cursor -->
+            <td style="padding: 12px;">
+              <span title="<%= Recurso::TIPOS[recurso.tipo] || recurso.tipo %>" style="background: #e9ecef; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 13px;">
+                <%= recurso.tipo %>
+              </span>
+            </td>
+
+            <td style="padding: 12px;"><%= recurso.cantidad %></td>
+            <td style="padding: 12px;"><%= recurso.ubicacion %></td>
+            
+            <td style="padding: 12px; position: relative;">
+              <% if recurso.respond_to?(:observaciones) && recurso.observaciones.present? %>
+                <details style="cursor: pointer;">
+                  <summary title="Haz clic para leer observaciones" style="outline: none; color: #007bff; font-weight: 500;">
+                    🔍 Ver detalles
+                  </summary>
+                  <div style="position: absolute; z-index: 100; background: #ffffff; border: 1px solid #ccc; padding: 10px; border-radius: 6px; box-shadow: 0px 4px 10px rgba(0,0,0,0.15); max-width: 250px; margin-top: 5px; word-wrap: break-word; font-size: 13px; color: #333;">
+                    <%= recurso.observaciones %>
+                  </div>
+                </details>
+              <% else %>
+                <span style="color: #999;">Sin observaciones</span>
+              <% end %>
+            </td>
+
+            <td style="padding: 10px;">
+              <%= recurso.fecha_vencimiento.present? ? recurso.fecha_vencimiento.strftime("%d/%m/%Y") : "N/A" %>
+            </td>
+
+            <td style="padding: 12px; display: flex; gap: 6px; align-items: center;">
+              <!-- Botón Prestar (Lógica existente) -->
+              <% if recurso.cantidad.to_i > 0 %>
+                <% if current_usuario.estudiante? %>
+                  <button type="button" 
+                          onclick="alert('Atención: Los préstamos solo pueden ser registrados por el encargado del taller.')" 
+                          style="background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                    Prestar
+                  </button>
+                <% else %>
+                  <%= link_to "Prestar", new_prestamo_path(recurso_id: recurso.id), style: "background: #28a745; color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; display: inline-block;" %>
+                <% end %>
+              <% else %>
+                <span style="color: #999; font-size: 13px;">Sin stock</span>
+              <% end %>
+
+              <!-- Botones de Editar y Eliminar (Solo visibles para administradores) -->
+              <% if current_usuario.admin? %>
+                <%= link_to "Editar", edit_recurso_path(recurso), style: "background: #ffc107; color: #212529; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-weight: bold;" %>
+                
+                <%= button_to "Eliminar", recurso_path(recurso), method: :delete, data: { confirm: "¿Estás seguro de eliminar este recurso?" }, style: "background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 20px; color: #777;">
+            No se encontraron recursos que coincidan con la búsqueda.
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div style="margin-top: 20px;">
+    <%= link_to "← Volver al Inicio", root_path, style: "color: #555; text-decoration: none;" %>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+<div style="max-width: 500px; margin: 40px auto; font-family: sans-serif; background: #f8f9fa; padding: 25px; border-radius: 8px; border: 1px solid #ddd;">
+  <h2>Registrar Préstamo</h2>
+  
+  <p><strong>Recurso:</strong> <%= @recurso.nombre %> (<%= @recurso.codigo %>)</p>
+  <p><strong>Stock disponible:</strong> <%= @recurso.cantidad %> unidades</p>
+
+  <%= form_with scope: :prestamo, url: prestamos_path, method: :post, local: true do |f| %>
+    <%= f.hidden_field :recurso_id, value: @recurso.id %>
+
+    <div style="margin-bottom: 15px;">
+      <%= f.label :email_usuario, "Correo del Estudiante / Usuario:", style: "display: block; font-weight: bold; margin-bottom: 5px;" %>
+      <%= f.email_field :email_usuario, required: true, placeholder: "ejemplo@estudiante.cl", style: "width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" %>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+      <%= f.submit "Confirmar Préstamo", style: "background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;" %>
+      <%= link_to "Cancelar", recursos_path, style: "background: #6c757d; color: white; text-decoration: none; padding: 10px 15px; border-radius: 4px;" %>
+    </div>
+  <% end %>
+</div>

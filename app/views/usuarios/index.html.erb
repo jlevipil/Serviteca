@@ -1,0 +1,39 @@
+<div style="max-width: 900px; margin: 30px auto; font-family: sans-serif;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>👥 Gestión de Usuarios</h2>
+    <%= link_to "← Volver al Panel Admin", admin_panel_path, style: "background: #6c757d; color: white; padding: 8px 14px; text-decoration: none; border-radius: 4px; font-weight: bold;" %>
+  </div>
+
+  <table style="width: 100%; border-collapse: collapse; background: white; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+    <thead>
+      <tr style="background: #f8f9fa; border-bottom: 2px solid #ddd; text-align: left;">
+        <th style="padding: 12px;">ID</th>
+        <th style="padding: 12px;">Email</th>
+        <th style="padding: 12px;">Rol Actual</th>
+        <th style="padding: 12px;">Fecha Registro</th>
+        <th style="padding: 12px; text-align: center;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @usuarios.each do |usuario| %>
+        <tr style="border-bottom: 1px solid #eee;">
+          <td style="padding: 12px;">#<%= usuario.id %></td>
+          <td style="padding: 12px; font-weight: bold;"><%= usuario.email %></td>
+          <td style="padding: 12px;">
+            <span style="background: #e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: bold;">
+              <%= usuario.role %>
+            </span>
+          </td>
+          <td style="padding: 12px;"><%= usuario.created_at.strftime("%d/%m/%Y") %></td>
+          <td style="padding: 12px; text-align: center; display: flex; gap: 8px; justify-content: center;">
+            <%= link_to "Editar Rol", edit_usuario_path(usuario), style: "background: #ffc107; color: #000; padding: 6px 10px; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold;" %>
+            
+            <% unless usuario == current_usuario %>
+              <%= button_to "Eliminar", usuario_path(usuario), method: :delete, data: { turbo_confirm: "¿Estás seguro de eliminar este usuario?" }, style: "background: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer;" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
